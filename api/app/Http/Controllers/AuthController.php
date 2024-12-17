@@ -2,50 +2,47 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
+use App\Services\AuthService;
+use Illuminate\Http\Request;
 class AuthController extends Controller
 {
+
+    private AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function login(LoginRequest $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $result = $this->authService->login($request->validated());
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'message' => 'Credenciais inválidas'
-            ], 401);
+        if (is_array($result) && isset($result['error'])) {
+            return response()->apiError($result['error']);
         }
 
-        $token = $user->createToken('AuthToken')->accessToken;
-
-        return response()->json([
-            'user' => $user,
-            'access_token' => $token
-        ]);
+        return response()->apiSuccess($result);
     }
 
     public function register(RegisterRequest $request)
     {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'cpf' => $request->cpf,
-            'password' => Hash::make($request->password)
-        ]);
+        $result = $this->authService->register($request->validated());
 
-        $token = $user->createToken('AuthToken')->accessToken;
+        if (is_array($result) && isset($result['error'])) {
+            return response()->apiError($result['error']);
+        }
 
-        return response()->json([
-            'user' => $user,
-            'access_token' => $token
-        ], 201);
+        return response()->apiSuccess($result);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete();
+       $result = $this->authService->logout($request->user());
 
-        return response()->json([
-            'message' => 'Logout realizado com sucesso'
-        ]);
+        return response()->apiSuccess($result);
     }
 }
 
