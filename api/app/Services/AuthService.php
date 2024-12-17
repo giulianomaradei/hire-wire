@@ -50,7 +50,14 @@ class AuthService
 
             $token = $user->createToken('AuthToken')->accessToken;
 
-            $this->userService->createUserAccounts($user);
+            try {
+                $this->userService->createUserAccounts($user);
+            } catch (\Exception $e) {
+                return [
+                    'error' => $e->getMessage(),
+                    'statusCode' => 500
+                ];
+            }
 
             return [
                 'user' => new UserResource($user),

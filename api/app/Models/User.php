@@ -7,9 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use App\Models\Accounts\CheckingAccount;
-use App\Models\Accounts\SavingsAccount;
-use App\Models\Accounts\InvestmentAccount;
+use App\Models\Accounts\Account;
 
 class User extends Authenticatable
 {
@@ -51,18 +49,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function checkingAccounts()
+    public function accounts()
     {
-        return $this->hasMany(CheckingAccount::class);
-    }
-
-    public function savingsAccounts()
-    {
-        return $this->hasMany(SavingsAccount::class);
-    }
-
-    public function investmentAccounts()
-    {
-        return $this->hasMany(InvestmentAccount::class);
+        return $this->hasMany(Account::class);
     }
 }
