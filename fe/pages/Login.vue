@@ -163,8 +163,24 @@ function handleSubmit() {
   }
 }
 
-function register() {
-  console.log("register");
+async function register() {
+  const { data, error } = await sendRequest({
+    method: "POST",
+    url: "/register",
+    data: {
+      email: email.value,
+      password: password.value,
+      name: name.value,
+      cpf: cpf.value,
+    },
+  });
+
+  if (error) {
+    console.log(error);
+  } else {
+    localStorage.setItem("token", data.token);
+    router.push("/");
+  }
 }
 
 async function login() {
