@@ -17,20 +17,16 @@ class UserService
                 'balance' => 0,
                 'user_id' => $user->id,
             ]);
-            $user->accounts()->save($checkingAccount);
 
             $savingsAccount = SavingsAccount::create([
                 'balance' => 0,
                 'user_id' => $user->id,
             ]);
-            $user->accounts()->save($savingsAccount);
-
 
             $investmentAccount = InvestmentAccount::create([
                 'balance' => 0,
                 'user_id' => $user->id,
             ]);
-            $user->accounts()->save($investmentAccount);
         } catch (\Exception $e) {
             throw $e;
         }
