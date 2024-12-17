@@ -4,6 +4,7 @@ export const sendRequest = async ({ method = "GET", url, data = null }) => {
   try {
     const headers = {
       "Content-Type": "application/json",
+      Accept: "application/json",
     };
 
     const token = localStorage.getItem("token");
@@ -12,11 +13,16 @@ export const sendRequest = async ({ method = "GET", url, data = null }) => {
       headers["Authorization"] = `Bearer ${token}`;
     }
 
-    const response = await $fetch(`http://localhost:8000/api${url}`, {
+    const payload = {
       method,
-      body: JSON.stringify(data),
       headers,
-    });
+    };
+
+    if (data) {
+      payload.body = JSON.stringify(data);
+    }
+
+    const response = await $fetch(`http://localhost:8000/api${url}`, payload);
 
     return {
       data: response.response,

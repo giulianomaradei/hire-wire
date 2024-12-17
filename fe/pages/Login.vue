@@ -144,8 +144,10 @@
 
 <script setup>
 import { sendRequest } from "~/composables/global";
+import { useStore } from "~/stores";
 
 const router = useRouter();
+const store = useStore();
 
 const email = ref("giulianomaradei@gmail.com");
 const password = ref("Toru2012tete?new");
@@ -178,7 +180,8 @@ async function register() {
   if (error) {
     console.log(error);
   } else {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", data.access_token);
+    store.setUser(data.user);
     router.push("/");
   }
 }
@@ -196,7 +199,8 @@ async function login() {
   if (error) {
     console.log(error);
   } else {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("token", data.access_token);
+    store.setUser(data.user);
     router.push("/");
   }
 }

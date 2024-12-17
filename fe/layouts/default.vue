@@ -10,7 +10,9 @@ const router = useRouter();
 if (import.meta.client) {
   const token = localStorage.getItem("token");
 
-  if (!token) {
+  console.log(token);
+
+  if (token === null || token === undefined) {
     router.push("/login");
   }
 }
