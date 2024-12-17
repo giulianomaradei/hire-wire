@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use App\Models\Accounts\CheckingAccount;
+use App\Models\Accounts\SavingsAccount;
+use App\Models\Accounts\InvestmentAccount;
 
 class User extends Authenticatable
 {
@@ -46,5 +49,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function checkingAccounts()
+    {
+        return $this->hasMany(CheckingAccount::class);
+    }
+
+    public function savingsAccounts()
+    {
+        return $this->hasMany(SavingsAccount::class);
+    }
+
+    public function investmentAccounts()
+    {
+        return $this->hasMany(InvestmentAccount::class);
     }
 }

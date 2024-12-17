@@ -14,6 +14,9 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'username' => $this->username,
             'cpf' => $this->cpf,
+            'checkingAccounts' => $this->checkingAccounts,
+            'savingsAccounts' => $this->savingsAccounts,
+            'investmentAccounts' => $this->investmentAccounts,
         ];
     }
 

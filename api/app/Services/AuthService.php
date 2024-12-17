@@ -11,6 +11,14 @@ use App\Http\Resources\UserResource;
 
 class AuthService
 {
+
+    private $userService;
+
+    public function __construct()
+    {
+        $this->userService = new UserService();
+    }
+
     public function login($data)
     {
         $user = User::where('email', $data['email'])->first();
@@ -32,19 +40,28 @@ class AuthService
 
     public function register($data)
     {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'cpf' => $data['cpf'],
-            'password' => Hash::make($data['password'])
-        ]);
+        try {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'cpf' => $data['cpf'],
+                'password' => Hash::make($data['password'])
+            ]);
 
-        $token = $user->createToken('AuthToken')->accessToken;
+            $token = $user->createToken('AuthToken')->accessToken;
 
-        return [
-            'user' => new UserResource($user),
-            'access_token' => $token
-        ];
+            $this->userService->createUserAccounts($user);
+
+            return [
+                'user' => new UserResource($user),
+                'access_token' => $token
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => $e->getMessage(),
+                'statusCode' => 500
+            ];
+        }
     }
 
     public function logout($user)
@@ -53,7 +70,7 @@ class AuthService
         $token->revoke();
 
         return [
-            'message' => 'Logout realizado com sucesso'
+            'message' => 'Logout successful'
         ];
     }
 }
