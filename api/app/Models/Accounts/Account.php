@@ -5,21 +5,28 @@ namespace App\Models\Accounts;
 use Illuminate\Database\Eloquent\Model;
 use App\Contracts\AccountInterface;
 
-/// Em termos de POO essa classe deveria ser abstrata, afinal nao existe uma conta sem um tipo, porém em razão do laravel nos não podemos ter uma classe abstrata funcionando numa relação como model, então mantemos ela como uma classe concreta, existem outras maneiras porém acredito que essa o codigo fica mais limpo e funcional.
+/// Eu utilizei STI, para lidar com as contas, onde eu possuo apenas uma tabela para as contas e os tipos, para o nosso sistema que é simples funciona bem, porém também poderiamos usar coisas como o polimorfismo das relações do laravel. Essa maneira é funcional já que as diferentes contas não possuem colunas diferentes, apenas o comportamente, dessa maneira conseguimos ter uma logica especifca para cada. Caso contas precisasem de campos diferentes, eu utilizaria o polimorfismo das relações do laravel.
 class Account extends Model implements AccountInterface
 {
+    protected $table = 'accounts';
+
     protected $fillable = [
         'balance',
         'user_id',
+        'type',
     ];
-
-    protected $appends = ['account_type'];
 
     protected const MONTHLY_ADJUSTMENT_RATE = 0.0;
 
-    public function accountable(): MorphTo
+    protected static function boot()
     {
-        return $this->morphTo();
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->type)) {
+                $model->type = class_basename($model);
+            }
+        });
     }
 
     public function user()

@@ -13,29 +13,24 @@ class UserService
     {
         try {
             /// create one account of each type
-            $checkingAccount = CheckingAccount::create();
-            $user->accounts()->create([
+            $checkingAccount = CheckingAccount::create([
                 'balance' => 0,
                 'user_id' => $user->id,
-                'accountable_type' => CheckingAccount::class,
-                'accountable_id' => $checkingAccount->id,
             ]);
+            $user->accounts()->save($checkingAccount);
 
-            $savingsAccount = SavingsAccount::create();
-            $user->accounts()->create([
+            $savingsAccount = SavingsAccount::create([
                 'balance' => 0,
                 'user_id' => $user->id,
-                'accountable_type' => SavingsAccount::class,
-                'accountable_id' => $savingsAccount->id,
             ]);
+            $user->accounts()->save($savingsAccount);
 
-            $investmentAccount = InvestmentAccount::create();
-            $user->accounts()->create([
+
+            $investmentAccount = InvestmentAccount::create([
                 'balance' => 0,
                 'user_id' => $user->id,
-                'accountable_type' => InvestmentAccount::class,
-                'accountable_id' => $investmentAccount->id,
             ]);
+            $user->accounts()->save($investmentAccount);
         } catch (\Exception $e) {
             throw $e;
         }
