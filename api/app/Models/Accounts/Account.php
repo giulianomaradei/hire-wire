@@ -4,6 +4,9 @@ namespace App\Models\Accounts;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Contracts\AccountInterface;
+use App\Models\Accounts\CheckingAccount;
+use App\Models\Accounts\SavingsAccount;
+use App\Models\Accounts\InvestmentAccount;
 
 /// Eu utilizei STI, para lidar com as contas, onde eu possuo apenas uma tabela para as contas e os tipos, para o nosso sistema que é simples funciona bem, porém também poderiamos usar coisas como o polimorfismo das relações do laravel. Essa maneira é funcional já que as diferentes contas não possuem colunas diferentes, apenas o comportamente, dessa maneira conseguimos ter uma logica especifca para cada. Caso contas precisasem de campos diferentes, eu utilizaria o polimorfismo das relações do laravel ou outras implementações como table per class.
 class Account extends Model implements AccountInterface
@@ -15,8 +18,6 @@ class Account extends Model implements AccountInterface
         'user_id',
         'type',
     ];
-
-    protected const MONTHLY_ADJUSTMENT_RATE = 0.0;
 
     protected static function boot()
     {
@@ -65,15 +66,17 @@ class Account extends Model implements AccountInterface
 
     public function applyMonthlyAdjustment(): void
     {
-        $rate = $this->getMonthlyAdjustmentRate();
+        // Get the fully qualified class name
+        $className = 'App\\Models\\Accounts\\' . $this->type;
+
+        if (!class_exists($className)) {
+            throw new \Exception("Invalid account type: {$this->type}");
+        }
+
+        $rate = $className::MONTHLY_ADJUSTMENT_RATE;
         $adjustment = $this->balance * $rate;
         $this->balance += $adjustment;
         $this->save();
-    }
-
-    protected function getMonthlyAdjustmentRate(): float
-    {
-        return static::MONTHLY_ADJUSTMENT_RATE;
     }
 
     public function getAccountTypeAttribute(): string

@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\Accounts\Account;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
