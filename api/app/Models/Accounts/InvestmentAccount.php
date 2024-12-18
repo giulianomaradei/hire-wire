@@ -5,8 +5,8 @@ namespace App\Models\Accounts;
 class InvestmentAccount extends Account
 {
     protected const MONTHLY_ADJUSTMENT_RATE = 0.001;
-    private const DEPOSIT_INCREMENT = 0.5;
 
+    private const DEPOSIT_INCREMENT = 0.5;
 
     protected static function boot()
     {

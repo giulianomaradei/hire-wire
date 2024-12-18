@@ -1,8 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\Accounts\Account;
-use Laravel\Passport\Passport;
 use Illuminate\Testing\Fluent\AssertableJson;
 
 beforeEach(function () {
@@ -10,13 +8,12 @@ beforeEach(function () {
     Artisan::call('passport:client --personal --no-interaction');
 });
 
-
 test('user can register', function () {
     $userData = [
         'name' => 'Test User',
         'email' => 'test@example.com',
         'password' => 'password123',
-        'cpf' => '12345678900'
+        'cpf' => '12345678900',
     ];
 
     $this->postJson(route('auth.register'), $userData)
@@ -37,7 +34,7 @@ test('user can register', function () {
 
     $this->assertDatabaseHas('users', [
         'email' => $userData['email'],
-        'cpf' => $userData['cpf']
+        'cpf' => $userData['cpf'],
     ]);
 
     // Check if user has exactly 3 accounts
@@ -55,7 +52,7 @@ test('user can login', function () {
 
     $this->postJson(route('auth.login'), [
         'email' => $user->email,
-        'password' => 'password'
+        'password' => 'password',
     ])->assertStatus(200)->assertJson(function (AssertableJson $json) use ($user) {
         $json->where('error', '')
             ->where('response.user.id', $user->id)
@@ -71,15 +68,14 @@ test('user can logout', function () {
 
     $response = $this->postJson(route('auth.login'), [
         'email' => $user->email,
-        'password' => 'password'
+        'password' => 'password',
     ]);
 
     $response->assertStatus(200);
 
     $token = $response->json()['response']['access_token'];
 
-    $this->withHeader('Authorization', 'Bearer ' . $token)
+    $this->withHeader('Authorization', 'Bearer '.$token)
         ->postJson(route('auth.logout'))
         ->assertStatus(200);
 });
-

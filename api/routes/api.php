@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AccountsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\AccountsController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -13,7 +13,6 @@ Route::get('/user', function (Request $request) {
 Route::middleware('auth:api')->group(function () {
     Route::get('/user', [UserController::class, 'getUser'])->name('user.get');
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
-
 
     Route::group(['prefix' => 'accounts'], function () {
         Route::post('/{account}/deposit', [AccountsController::class, 'deposit'])->name('accounts.deposit');

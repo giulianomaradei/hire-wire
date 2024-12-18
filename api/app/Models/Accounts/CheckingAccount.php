@@ -5,6 +5,7 @@ namespace App\Models\Accounts;
 class CheckingAccount extends Account
 {
     protected const MONTHLY_ADJUSTMENT_RATE = 0.001;
+
     private const DEPOSIT_INCREMENT = 0.5;
 
     protected static function boot()
@@ -15,7 +16,6 @@ class CheckingAccount extends Account
             $model->type = 'CheckingAccount';
         });
     }
-
 
     public function deposit(float $amount): void
     {

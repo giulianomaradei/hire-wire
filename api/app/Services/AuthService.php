@@ -2,31 +2,27 @@
 
 namespace App\Services;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Http\Request;
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
-use App\Http\Resources\UserResource;
 
 class AuthService
 {
-
     private $userService;
 
     public function __construct()
     {
-        $this->userService = new UserService();
+        $this->userService = new UserService;
     }
 
     public function login($data)
     {
         $user = User::where('email', $data['email'])->first();
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (! $user || ! Hash::check($data['password'], $user->password)) {
             return [
-                'error' => "Auth failed",
-                'statusCode' => 401
+                'error' => 'Auth failed',
+                'statusCode' => 401,
             ];
         }
 
@@ -34,7 +30,7 @@ class AuthService
 
         return [
             'user' => new UserResource($user),
-            'access_token' => $token
+            'access_token' => $token,
         ];
     }
 
@@ -45,7 +41,7 @@ class AuthService
                 'name' => $data['name'],
                 'email' => $data['email'],
                 'cpf' => $data['cpf'],
-                'password' => Hash::make($data['password'])
+                'password' => Hash::make($data['password']),
             ]);
 
             $token = $user->createToken('AuthToken')->accessToken;
@@ -55,18 +51,18 @@ class AuthService
             } catch (\Exception $e) {
                 return [
                     'error' => $e->getMessage(),
-                    'statusCode' => 500
+                    'statusCode' => 500,
                 ];
             }
 
             return [
                 'user' => new UserResource($user),
-                'access_token' => $token
+                'access_token' => $token,
             ];
         } catch (\Exception $e) {
             return [
                 'error' => $e->getMessage(),
-                'statusCode' => 500
+                'statusCode' => 500,
             ];
         }
     }
@@ -77,7 +73,7 @@ class AuthService
         $token->revoke();
 
         return [
-            'message' => 'Logout successful'
+            'message' => 'Logout successful',
         ];
     }
 }

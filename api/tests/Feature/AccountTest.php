@@ -1,24 +1,22 @@
 <?php
 
-use App\Models\User;
 use App\Models\Accounts\Account;
-use Laravel\Passport\Passport;
-use Illuminate\Testing\Fluent\AssertableJson;
 use App\Models\Accounts\CheckingAccount;
-use App\Models\Accounts\SavingsAccount;
 use App\Models\Accounts\InvestmentAccount;
+use App\Models\Accounts\SavingsAccount;
+use App\Models\User;
+use Laravel\Passport\Passport;
 
 beforeEach(function () {
     Artisan::call('migrate:fresh');
     Artisan::call('passport:client --personal --no-interaction');
 });
 
-
 test('user deposit money', function () {
     $user = User::factory()->create();
     $account = $user->accounts()->create([
         'type' => 'CheckingAccount',
-        'balance' => 0
+        'balance' => 0,
     ]);
 
     Passport::actingAs($user);
@@ -36,17 +34,17 @@ test('accounts receive monthly adjustment', function () {
     // Create accounts with initial balances
     $checkingAccount = CheckingAccount::create([
         'balance' => 1000,
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     $savingsAccount = SavingsAccount::create([
         'balance' => 1000,
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     $investmentAccount = InvestmentAccount::create([
         'balance' => 1000,
-        'user_id' => $user->id
+        'user_id' => $user->id,
     ]);
 
     // Run the monthly adjustment command

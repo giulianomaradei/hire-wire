@@ -17,5 +17,4 @@ class UserResource extends JsonResource
             'accounts' => $this->accounts,
         ];
     }
-
 }

@@ -2,13 +2,9 @@
 
 namespace App\Models\Accounts;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Contracts\AccountInterface;
-use App\Models\Accounts\CheckingAccount;
-use App\Models\Accounts\SavingsAccount;
-use App\Models\Accounts\InvestmentAccount;
+use Illuminate\Database\Eloquent\Model;/// Eu utilizei STI, para lidar com as contas, onde eu possuo apenas uma tabela para as contas e os tipos, para o nosso sistema que é simples funciona bem, porém também poderiamos usar coisas como o polimorfismo das relações do laravel. Essa maneira é funcional já que as diferentes contas não possuem colunas diferentes, apenas o comportamente, dessa maneira conseguimos ter uma logica especifca para cada. Caso contas precisasem de campos diferentes, eu utilizaria o polimorfismo das relações do laravel ou outras implementações como table per class.
 
-/// Eu utilizei STI, para lidar com as contas, onde eu possuo apenas uma tabela para as contas e os tipos, para o nosso sistema que é simples funciona bem, porém também poderiamos usar coisas como o polimorfismo das relações do laravel. Essa maneira é funcional já que as diferentes contas não possuem colunas diferentes, apenas o comportamente, dessa maneira conseguimos ter uma logica especifca para cada. Caso contas precisasem de campos diferentes, eu utilizaria o polimorfismo das relações do laravel ou outras implementações como table per class.
 class Account extends Model implements AccountInterface
 {
     protected $table = 'accounts';
@@ -38,7 +34,7 @@ class Account extends Model implements AccountInterface
     public function deposit(float $amount): void
     {
         try {
-            if($amount <= 0) {
+            if ($amount <= 0) {
                 throw new \Exception('Invalid deposit value');
             }
 
@@ -67,9 +63,9 @@ class Account extends Model implements AccountInterface
     public function applyMonthlyAdjustment(): void
     {
         // Get the fully qualified class name
-        $className = 'App\\Models\\Accounts\\' . $this->type;
+        $className = 'App\\Models\\Accounts\\'.$this->type;
 
-        if (!class_exists($className)) {
+        if (! class_exists($className)) {
             throw new \Exception("Invalid account type: {$this->type}");
         }
 
@@ -81,6 +77,6 @@ class Account extends Model implements AccountInterface
 
     public function getAccountTypeAttribute(): string
     {
-        return class_basename($this->accountable_type) . 'Account';
+        return class_basename($this->accountable_type).'Account';
     }
 }

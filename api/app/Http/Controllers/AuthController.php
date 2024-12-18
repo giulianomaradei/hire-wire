@@ -7,10 +7,8 @@ use App\Http\Requests\RegisterRequest;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
 
-
 class AuthController extends Controller
 {
-
     private AuthService $authService;
 
     public function __construct(AuthService $authService)
@@ -42,10 +40,8 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-       $result = $this->authService->logout($request->user());
+        $result = $this->authService->logout($request->user());
 
         return response()->apiSuccess($result);
     }
 }
-
-

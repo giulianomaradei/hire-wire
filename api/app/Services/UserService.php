@@ -4,8 +4,8 @@ namespace App\Services;
 
 use App\Models\Accounts\Account;
 use App\Models\Accounts\CheckingAccount;
-use App\Models\Accounts\SavingsAccount;
 use App\Models\Accounts\InvestmentAccount;
+use App\Models\Accounts\SavingsAccount;
 
 class UserService
 {
