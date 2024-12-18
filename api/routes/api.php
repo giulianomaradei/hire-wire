@@ -11,14 +11,14 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 Route::middleware('auth:api')->group(function () {
-    Route::get('/user', [UserController::class, 'getUser']);
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [UserController::class, 'getUser'])->name('user.get');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
 
     Route::group(['prefix' => 'accounts'], function () {
-        Route::post('/{account}/deposit', [AccountsController::class, 'deposit']);
+        Route::post('/{account}/deposit', [AccountsController::class, 'deposit'])->name('accounts.deposit');
     });
 });
 
-Route::post('/login', [AuthController::class, 'login']);
-Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login'])->name('auth.login');
+Route::post('/register', [AuthController::class, 'register'])->name('auth.register');
