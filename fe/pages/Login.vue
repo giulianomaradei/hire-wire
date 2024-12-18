@@ -149,8 +149,8 @@ import { useStore } from "~/stores";
 const router = useRouter();
 const store = useStore();
 
-const email = ref("giulianomaradei@gmail.com");
-const password = ref("Toru2012tete?new");
+const email = ref("");
+const password = ref("");
 const name = ref("");
 const cpf = ref("");
 const confirmPassword = ref("");

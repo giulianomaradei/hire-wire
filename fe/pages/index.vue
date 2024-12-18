@@ -6,11 +6,13 @@
         <div
           v-for="(account, index) in user.accounts"
           :key="index"
-          class="p-4 mb-4 border rounded-lg shadow-md bg-white flex-1"
+          class="p-4 mb-4 border rounded-lg shadow-md bg-white flex-1 min-h-full flex flex-col gap-2"
         >
-          <p class="text-lg font-semibold">Type: {{ account.type }}</p>
+          <p class="text-lg font-semibold">
+            Type: {{ account.type.replace("Account", "") }}
+          </p>
           <p class="text-lg">Balance: ${{ account.balance.toFixed(2) }}</p>
-          <div class="mt-2">
+          <div class="mt-4">
             <input
               type="number"
               v-model="depositAmount[index]"
@@ -19,7 +21,13 @@
             />
             <button
               @click="makeDeposit(index)"
-              class="mt-2 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              class="mt-2 text-white py-2 px-4 rounded"
+              :class="{
+                'bg-blue-500 hover:bg-blue-600 cursor-pointer':
+                  depositAmount[index] > 0,
+                'bg-gray-300 cursor-none': depositAmount[index] <= 0,
+              }"
+              :disabled="depositAmount[index] <= 0"
             >
               Deposit
             </button>
@@ -46,17 +54,29 @@ onMounted(async () => {
     const user = await sendRequest({ url: "/user", method: "GET" });
     store.setUser(user.data);
   }
+
+  depositAmount.value = user.value.accounts.map((account) => 0);
 });
 
 function makeDeposit(index) {
   const amount = depositAmount.value[index];
   if (amount > 0) {
-    // Logic to handle deposit
-    console.log(`Depositing $${amount} to account ${index}`);
-    // Reset the input field
-    depositAmount.value[index] = "";
-  } else {
-    alert("Please enter a valid deposit amount.");
+    const accountId = user.value.accounts[index].id;
+
+    const account = sendRequest({
+      method: "POST",
+      url: `/accounts/${accountId}/deposit`,
+      data: {
+        amount,
+      },
+    });
+
+    if (account) {
+      store.user.accounts[index].balance += amount;
+      depositAmount.value[index] = 0;
+    }
+
+    console.log(account);
   }
 }
 </script>
