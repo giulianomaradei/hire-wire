@@ -14,14 +14,14 @@
       <form class="space-y-6" @submit.prevent="handleSubmit">
         <div v-if="isRegistering">
           <label for="name" class="block text-sm/6 font-medium text-gray-900"
-            >Name</label
+            >Name*</label
           >
           <div class="mt-2">
             <input
               type="text"
               name="name"
               id="name"
-              autocomplete="name"
+              required
               v-model="name"
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
@@ -30,14 +30,13 @@
 
         <div>
           <label for="email" class="block text-sm/6 font-medium text-gray-900"
-            >Email address</label
+            >Email address <span v-if="isRegistering">*</span></label
           >
           <div class="mt-2">
             <input
               type="email"
               name="email"
               id="email"
-              autocomplete="email"
               v-model="email"
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
@@ -46,15 +45,16 @@
 
         <div v-if="isRegistering">
           <label for="cpf" class="block text-sm/6 font-medium text-gray-900"
-            >Cpf</label
+            >Cpf*</label
           >
           <div class="mt-2">
             <input
               type="text"
               name="cpf"
               id="cpf"
-              autocomplete="cpf"
               v-model="cpf"
+              @input="formatCPF"
+              maxlength="14"
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
           </div>
@@ -65,7 +65,7 @@
             <label
               for="password"
               class="block text-sm/6 font-medium text-gray-900"
-              >Password</label
+              >Password<span v-if="isRegistering">*</span></label
             >
             <div class="text-sm" v-if="!isRegistering">
               <a
@@ -80,7 +80,6 @@
               type="password"
               name="password"
               id="password"
-              autocomplete="current-password"
               v-model="password"
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
@@ -92,7 +91,7 @@
             <label
               for="confirmPassword"
               class="block text-sm/6 font-medium text-gray-900"
-              >Confirm Password</label
+              >Confirm Password*</label
             >
           </div>
           <div class="mt-2">
@@ -100,7 +99,6 @@
               type="password"
               name="confirmPassword"
               id="confirmPassword"
-              autocomplete="confirm-password"
               v-model="confirmPassword"
               class="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
             />
@@ -115,7 +113,11 @@
           </button>
         </div>
       </form>
-
+      <div class="min-h-5">
+        <p class="text-sm text-red-500 max-w-full">
+          {{ errorMessage }}
+        </p>
+      </div>
       <p
         v-if="!isRegistering"
         class="mt-10 text-center text-sm/6 text-gray-500"
@@ -157,6 +159,8 @@ const confirmPassword = ref("");
 
 const isRegistering = ref(false);
 
+const errorMessage = ref("");
+
 function handleSubmit() {
   if (isRegistering.value) {
     register();
@@ -165,7 +169,26 @@ function handleSubmit() {
   }
 }
 
+function resetValues() {
+  errorMessage.value = "";
+  email.value = "";
+  password.value = "";
+  name.value = "";
+  cpf.value = "";
+  confirmPassword.value = "";
+}
+
 async function register() {
+  if (!cpfIsValid.value) {
+    errorMessage.value = "Invalid CPF.";
+    return;
+  }
+
+  if (password.value !== confirmPassword.value) {
+    errorMessage.value = "Passwords do not match.";
+    return;
+  }
+
   const { data, error } = await sendRequest({
     method: "POST",
     url: "/register",
@@ -178,10 +201,11 @@ async function register() {
   });
 
   if (error) {
-    console.log(error);
+    errorMessage.value = "Error registering user.";
   } else {
     localStorage.setItem("token", data.access_token);
     store.setUser(data.user);
+    resetValues();
     router.push("/");
   }
 }
@@ -197,11 +221,28 @@ async function login() {
   });
 
   if (error) {
-    console.log(error);
+    errorMessage.value = "Error logging in.";
   } else {
     localStorage.setItem("token", data.access_token);
     store.setUser(data.user);
+    resetValues();
     router.push("/");
   }
 }
+
+function formatCPF() {
+  let value = cpf.value.replace(/\D/g, ""); // Remove tudo que não é número
+
+  if (value.length <= 11) {
+    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+    value = value.replace(/(\d{3})(\d)/, "$1.$2");
+    value = value.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+  }
+
+  cpf.value = value;
+}
+
+const cpfIsValid = computed(() => {
+  return cpf.value.length === 14;
+});
 </script>
