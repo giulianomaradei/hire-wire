@@ -67,13 +67,6 @@
               class="block text-sm/6 font-medium text-gray-900"
               >Password<span v-if="isRegistering">*</span></label
             >
-            <div class="text-sm" v-if="!isRegistering">
-              <a
-                href="#"
-                class="font-semibold text-indigo-600 hover:text-indigo-500"
-                >Forgot password?</a
-              >
-            </div>
           </div>
           <div class="mt-2">
             <input
