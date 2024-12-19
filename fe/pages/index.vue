@@ -12,6 +12,9 @@
             Type: {{ account.type.replace("Account", "") }}
           </p>
           <p class="text-lg">Balance: ${{ account.balance.toFixed(2) }}</p>
+          <p class="text-lg">
+            Deposit Increment: ${{ account.deposit_increment?.toFixed(2) ?? 0 }}
+          </p>
           <div class="mt-4">
             <input
               type="number"
@@ -58,12 +61,13 @@ onMounted(async () => {
   depositAmount.value = user.value.accounts.map((account) => 0);
 });
 
-function makeDeposit(index) {
+async function makeDeposit(index) {
   const amount = depositAmount.value[index];
+  const account = user.value.accounts[index];
   if (amount > 0) {
     const accountId = user.value.accounts[index].id;
 
-    const account = sendRequest({
+    sendRequest({
       method: "POST",
       url: `/accounts/${accountId}/deposit`,
       data: {
@@ -72,7 +76,8 @@ function makeDeposit(index) {
     });
 
     if (account) {
-      store.user.accounts[index].balance += amount;
+      store.user.accounts[index].balance +=
+        amount + (account.deposit_increment ?? 0);
       depositAmount.value[index] = 0;
     }
 

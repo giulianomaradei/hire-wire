@@ -8,6 +8,8 @@ class InvestmentAccount extends Account
 
     private const DEPOSIT_INCREMENT = 0.5;
 
+    protected $appends = ['deposit_increment'];
+
     protected static function boot()
     {
         parent::boot();
@@ -32,5 +34,10 @@ class InvestmentAccount extends Account
     public function newQuery()
     {
         return parent::newQuery()->where('type', 'InvestmentAccount');
+    }
+
+    public function getDepositIncrementAttribute(): float
+    {
+        return self::DEPOSIT_INCREMENT;
     }
 }

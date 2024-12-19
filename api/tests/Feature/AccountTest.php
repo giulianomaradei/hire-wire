@@ -14,18 +14,20 @@ beforeEach(function () {
 
 test('user deposit money', function () {
     $user = User::factory()->create();
-    $account = $user->accounts()->create([
-        'type' => 'CheckingAccount',
+    $checkingAccount = CheckingAccount::create([
         'balance' => 0,
+        'user_id' => $user->id,
     ]);
 
     Passport::actingAs($user);
 
-    $this->postJson(route('accounts.deposit', $account->id), ['amount' => 100])
+    $this->postJson(route('accounts.deposit', $checkingAccount->id), ['amount' => 100])
         ->assertStatus(200);
 
-    $account->refresh();
-    expect($account->balance)->toBe(100);
+    $depositIncrement = $checkingAccount->getDepositIncrementAttribute();
+
+    $checkingAccount->refresh();
+    expect($checkingAccount->balance)->toBe(100 + $depositIncrement);
 });
 
 test('accounts receive monthly adjustment', function () {

@@ -75,8 +75,21 @@ class Account extends Model implements AccountInterface
         $this->save();
     }
 
-    public function getAccountTypeAttribute(): string
+    // Adicionando este método para suportar a serialização de tipos de contas
+    public function newFromBuilder($attributes = [], $connection = null)
     {
-        return class_basename($this->accountable_type).'Account';
+        if (isset($attributes->type)) {
+            $class = 'App\\Models\\Accounts\\' . $attributes->type;
+
+            if (class_exists($class)) {
+                $model = new $class;
+                $model->exists = true;
+                $model->setRawAttributes((array) $attributes, true);
+                $model->setConnection($connection ?: $this->getConnectionName());
+                return $model;
+            }
+        }
+
+        return parent::newFromBuilder($attributes, $connection);
     }
 }
